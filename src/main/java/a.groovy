@@ -1,0 +1,6 @@
+/**
+ * @author me
+ */
+
+println "hello"
+
