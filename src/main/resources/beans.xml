@@ -1,44 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-      <property name="hibernateProperties">
-        <props>
-          <prop key="hibernate.hbm2ddl.auto">update</prop>
-          <prop key="hibernate.connection.pool_size">1</prop>
-          <prop key="hibernate.show_sql">true</prop>
-          <prop key="hibernate.connection.autocommit">true</prop>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
-          <!--HSQL-->
-          <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
-          <prop key="hibernate.connection.driver_class">org.h2.Driver</prop>
-          <prop key="hibernate.connection.url">jdbc:h2:file:///home/rimar/w/h2.db</prop>
-          <prop key="hibernate.connection.username">root</prop>
-          <prop key="hibernate.connection.password"></prop>
+  <bean id="myTxManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager" autowire="byName"/>
 
-        </props>
-      </property>
-      <property name="annotatedClasses">
-        <list>
-          <value>org.glob.da.pojo.Post</value>
-        </list>
-      </property>
-    </bean>
+  <aop:config>
+    <aop:pointcut id="postMeths" expression="execution(* org.glob.da.PostDAO.*(..))"/>
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="postMeths"/>
+  </aop:config>
 
-    <bean id="hibernateInterceptor" class="org.springframework.orm.hibernate3.HibernateInterceptor" autowire="byName" /><!--sessionFactory will get autowired-->
+  <tx:advice id="txAdvice" transaction-manager="myTxManager">
+    <tx:attributes>
+      <tx:method name="*" propagation="REQUIRED" />
+    </tx:attributes>
+  </tx:advice>
 
-    <bean id="postDaoTarget" class="org.glob.da.PostDAOImpl" autowire="byName" /><!--sessionFactory will get autowired-->
 
-    <bean id="postDAO" class="org.springframework.aop.framework.ProxyFactoryBean">
-      <property name="proxyInterfaces">
-        <value>org.glob.da.PostDAO</value>
-      </property>
-      <property name="interceptorNames">
-        <list>
-          <value>hibernateInterceptor</value>
-          <value>postDaoTarget</value>
-        </list>
-      </property>
-    </bean>
+  <bean id="postDAO" class="org.glob.da.PostDAOImpl" autowire="byName" /><!--sessionFactory will get autowired-->
 
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="hibernateProperties">
+      <props>
+        <prop key="hibernate.hbm2ddl.auto">update</prop>
+        <prop key="hibernate.connection.pool_size">1</prop>
+        <prop key="hibernate.show_sql">true</prop>
+        <prop key="hibernate.connection.autocommit">true</prop>
+
+        <!--HSQL-->
+        <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+        <prop key="hibernate.connection.driver_class">org.h2.Driver</prop>
+        <prop key="hibernate.connection.url">jdbc:h2:file:///home/rimar/w/h2.db</prop>
+        <prop key="hibernate.connection.username">root</prop>
+        <prop key="hibernate.connection.password"></prop>
+
+      </props>
+    </property>
+    <property name="annotatedClasses">
+      <list>
+        <value>org.glob.da.pojo.Post</value>
+      </list>
+    </property>
+  </bean>
 </beans>
