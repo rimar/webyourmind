@@ -10,9 +10,9 @@
           <prop key="hibernate.connection.autocommit">true</prop>
 
           <!--HSQL-->
-          <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-          <prop key="hibernate.connection.driver_class">com.mysql.jdbc.Driver</prop>
-          <prop key="hibernate.connection.url">jdbc:mysql://localhost/test</prop>
+          <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+          <prop key="hibernate.connection.driver_class">org.h2.Driver</prop>
+          <prop key="hibernate.connection.url">jdbc:h2:file:///home/rimar/w/h2.db</prop>
           <prop key="hibernate.connection.username">root</prop>
           <prop key="hibernate.connection.password"></prop>
 
